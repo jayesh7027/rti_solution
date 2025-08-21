@@ -154,6 +154,7 @@ You can view the `task_log` table in your database to audit all changes.
 
 
 ## Postman collection is attached in root directory 
+Please use this postman collection import it.
 - RTI Solution LLC Task API.postman_collection.json
 
 ## Contact
