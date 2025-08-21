@@ -1,0 +1,358 @@
+{
+	"info": {
+		"_postman_id": "244dd7de-4d09-4003-8906-ff448e53321e",
+		"name": "RTI Solution LLC Task API",
+		"description": "Collection for testing Yii2 Task API endpoints with Bearer token authentication.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4539271",
+		"_collection_link": "https://interstellar-comet-300714.postman.co/workspace/fa546318-a928-4863-8d68-c228e7a1b692/collection/4539271-244dd7de-4d09-4003-8906-ff448e53321e?action=share&source=collection_link&creator=4539271"
+	},
+	"item": [
+		{
+			"name": "List Tasks",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Typ",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "List Tasks With Filtering, sorting, pagination",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks?tag=Feature",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "tag",
+							"value": "Feature"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Task",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Task",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"First Task\",\n    \"description\": \"Task details here.\",\n    \"priority\": \"medium\",\n    \"due_date\": \"2025-08-31\",\n    \"tag_ids\": [1, 2]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks?status=pending&priority=high",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "pending"
+						},
+						{
+							"key": "priority",
+							"value": "high"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Task",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"title\": \"First task updated\",\n  \"description\": \"Updated description.\",\n  \"priority\": \"high\",\n  \"status\": \"in_progress\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Task",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks/13",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks",
+						"13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Restore Deleted Task",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks/13/restore",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks",
+						"13",
+						"restore"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Status Toggle",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "rtisolutiontoken7027",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer demo-token-123",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/rti_solution/web/tasks/9/toggle-status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"rti_solution",
+						"web",
+						"tasks",
+						"9",
+						"toggle-status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
