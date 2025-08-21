@@ -1,4 +1,10 @@
 <?php
+/**
+ * Author: Jayesh Prajapati
+ * Create At: 2023-08-21
+ * Updated At: 2023-08-22
+ * Description: Controller for managing tasks
+ */
 
 namespace app\controllers;
 
@@ -11,6 +17,7 @@ use yii\data\ActiveDataProvider;
 use yii\filters\Cors;
 use yii\filters\auth\HttpBearerAuth;
 use app\models\Task;
+use app\models\Tag;
 
 class TaskController extends ActiveController
 {
@@ -51,8 +58,14 @@ class TaskController extends ActiveController
     public function actionCreate()
     {
         $model = new Task();
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        $body = Yii::$app->getRequest()->getBodyParams();
+        $model->load($body, '');
+        $tagIds = isset($body['tag_ids']) ? $body['tag_ids'] : [];
         if ($model->validate() && $model->save()) {
+            if (!empty($tagIds)) {
+                $model->setTagIds($tagIds);
+            }
+            $this->logTaskAction($model, 'create');
             Yii::$app->response->setStatusCode(201);
             return [
                 'success' => true,
@@ -79,8 +92,14 @@ class TaskController extends ActiveController
                 'data' => ['message' => 'Task not found.'],
             ];
         }
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        $body = Yii::$app->getRequest()->getBodyParams();
+        $model->load($body, '');
+        $tagIds = isset($body['tag_ids']) ? $body['tag_ids'] : null;
         if ($model->validate() && $model->save()) {
+            if (is_array($tagIds)) {
+                $model->setTagIds($tagIds);
+            }
+            $this->logTaskAction($model, 'update');
             return [
                 'success' => true,
                 'data' => $model,
@@ -104,7 +123,10 @@ class TaskController extends ActiveController
             ];
         }
 
+        // Unlink all tags before soft delete
+        $model->unlinkAll('tags', true);
         if ($model->delete() !== false) {
+            $this->logTaskAction($model, 'delete');
             Yii::$app->response->setStatusCode(200);
             return [
                 'success' => true,
@@ -207,10 +229,10 @@ class TaskController extends ActiveController
             }
 
             // Prevent double wrapping if already in {success, data} format
-
             if (is_array($result) && array_key_exists('success', $result) && array_key_exists('data', $result)) {
+                // Add tags to data if it's a task or list of tasks
+                $result['data'] = $this->addTagsToData($result['data']);
                 return $result;
-                
             }
             if ($result instanceof \yii\data\ActiveDataProvider) {
                 $result = $result->getModels(); // extract the actual tasks
@@ -227,7 +249,7 @@ class TaskController extends ActiveController
             // For all other responses, wrap in {success: true, data: ...}
             return [
                 'success' => $success,
-                'data' => $result,
+                'data' => $this->addTagsToData($result),
             ];
         } catch (\Throwable $e) {
             $status = ($e instanceof \yii\web\HttpException) ? $e->statusCode : 500;
@@ -248,6 +270,36 @@ class TaskController extends ActiveController
                 'data' => $data,
             ];
         }
+    }
+
+    /**
+     * Add tags array to each task or single task in API response.
+     * @param $data
+     * @return array|mixed
+     */
+    protected function addTagsToData($data)
+    {
+        if (is_array($data)) {
+            // List of tasks
+            if (isset($data[0]) && $data[0] instanceof Task) {
+                return array_map(function ($task) {
+                    $arr = $task->toArray();
+                    $arr['tags'] = array_map(function ($tag) {
+                        return $tag->toArray();
+                    }, $task->tags);
+                    return $arr;
+                }, $data);
+            }
+        }
+        // Single task
+        if ($data instanceof Task) {
+            $arr = $data->toArray();
+            $arr['tags'] = array_map(function ($tag) {
+                return $tag->toArray();
+            }, $data->tags);
+            return $arr;
+        }
+        return $data;
     }
 
     public function beforeAction($action)
@@ -324,6 +376,11 @@ class TaskController extends ActiveController
             $query->andWhere(['like', 'title', $keyword]);
         }
 
+        // Filter by tag name or ID
+        if ($tag = $request->get('tag')) {
+            Task::filterByTag($query, $tag);
+        }
+
         // Sorting
         $sort = $request->get('sort', 'id');
         
@@ -352,5 +409,18 @@ class TaskController extends ActiveController
                 'pageSizeParam' => 'limit',
             ],
         ]);
+    }
+
+    /**
+     * Log task changes to task_log table.
+     */
+    protected function logTaskAction($task, $action)
+    {
+        \Yii::$app->db->createCommand()->insert('task_log', [
+            'task_id' => $task->id,
+            'action' => $action,
+            'data' => json_encode($task->attributes),
+            'created_at' => time(),
+        ])->execute();
     }
 }

@@ -1,4 +1,10 @@
 <?php
+/*
+ * Author: Jayesh Prajapati
+ * Create At: 2023-08-21
+ * Updated At: 2023-08-22
+ * Description: Model for managing tasks
+ */
 
 namespace app\models;
 
@@ -28,6 +34,53 @@ class Task extends ActiveRecord
     public static function tableName()
     {
         return 'task';
+    }
+    /**
+     * Gets tags related to this task (many-to-many).
+     */
+    public function getTags()
+    {
+        return $this->hasMany(Tag::class, ['id' => 'tag_id'])
+            ->viaTable('task_tag', ['task_id' => 'id']);
+    }
+
+    /**
+     * Assign tags to the task.
+     * @param array $tagIds
+     */
+    public function setTagIds($tagIds)
+    {
+        $this->unlinkAll('tags', true);
+        if (is_array($tagIds)) {
+            foreach ($tagIds as $tagId) {
+                $tag = Tag::findOne($tagId);
+                if ($tag) {
+                    $this->link('tags', $tag);
+                }
+            }
+        }
+    }
+
+    /**
+     * Returns array of tag IDs for this task.
+     */
+    public function getTagIds()
+    {
+        return $this->getTags()->select('id')->column();
+    }
+
+    /**
+     * Filter tasks by tag name or ID (static helper).
+     * @param \yii\db\ActiveQuery $query
+     * @param string|int $tag Tag name or ID
+     */
+    public static function filterByTag($query, $tag)
+    {
+        if (is_numeric($tag)) {
+            $query->joinWith('tags')->andWhere(['tag.id' => $tag]);
+        } else {
+            $query->joinWith('tags')->andWhere(['tag.name' => $tag]);
+        }
     }
 
     /**

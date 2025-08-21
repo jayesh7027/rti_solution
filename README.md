@@ -38,14 +38,13 @@ Or use your Apache/Nginx setup pointing to the `web/` directory.
 
 Direct browser access URL: http://localhost/rti_solution/web/
 
----
-
 ## API Endpoints
 All endpoints require the header:
 
 ```
 Authorization: Bearer rtisolutiontoken7027
 ```
+
 
 ### Task CRUD
 - **List Tasks:**
@@ -99,6 +98,51 @@ Authorization: Bearer rtisolutiontoken7027
 - If you change the API token, update it in `web/js/main.js` as well.
 
 ---
+
+## Task Audit Logs
+
+All create, update, and delete actions on tasks are logged in the `task_log` table. Each log entry records:
+- `task_id`: The affected task
+- `action`: One of `create`, `update`, or `delete`
+- `data`: JSON snapshot of the task at the time of the action
+- `created_at`: Timestamp of the action
+
+You can view the `task_log` table in your database to audit all changes.
+
+---
+
+
+## Tag System
+
+### Overview
+- Tasks can have multiple tags (many-to-many relationship).
+- Tags help categorize, filter, and organize tasks.
+- 20 dummy tags are auto-created during migration for testing/demo.
+
+### Tag Table
+- Table: `tag` (id, name)
+- Table: `task_tag` (task_id, tag_id) — junction table
+
+### Assigning Tags to Tasks
+- When creating or updating a task, include a `tag_ids` array in the request body:
+  ```json
+  {
+    "title": "Finish report",
+    "tag_ids": [1, 2, 3]
+  }
+  ```
+- Tags are linked/unlinked automatically on create, update, and delete.
+
+### Filtering Tasks by Tag
+- Use the `tag` query parameter to filter tasks by tag name or ID:
+  - `GET /tasks?tag=Urgent` (by name)
+  - `GET /tasks?tag=1` (by ID)
+
+### Example Dummy Tags
+`Urgent`, `Important`, `Low Priority`, `Bug`, `Feature`, `Enhancement`, `Research`, `Testing`, `Documentation`, `Meeting`, `Review`, `Blocked`, `In Progress`, `Completed`, `Backlog`, `Design`, `Frontend`, `Backend`, `DevOps`, `QA`
+
+---
+
 
 ## Postman collection is attached in root directory 
 - 
