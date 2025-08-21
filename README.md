@@ -55,7 +55,16 @@ Authorization: Bearer rtisolutiontoken7027
   - `GET /tasks/{id}`
 - **Create Task:**
   - `POST /tasks`
-  - Body: `{ "title": "Task title", "description": "...", "priority": "medium", "due_date": "2025-08-31" }`
+  - Body:
+    ```json
+    {
+      "title": "Task title",
+      "description": "...",
+      "priority": "medium",
+      "due_date": "2025-08-31",
+      "tag_ids": [1, 2]
+    }
+    ```
 - **Update Task:**
   - `PUT /tasks/{id}`
   - Body: `{ "title": "New title", ... }`
@@ -136,7 +145,7 @@ You can view the `task_log` table in your database to audit all changes.
 ### Filtering Tasks by Tag
 - Use the `tag` query parameter to filter tasks by tag name or ID:
   - `GET /tasks?tag=Urgent` (by name)
-  - `GET /tasks?tag=1` (by ID)
+  - `GET /tasks?tag=1` (by ID)git s
 
 ### Example Dummy Tags
 `Urgent`, `Important`, `Low Priority`, `Bug`, `Feature`, `Enhancement`, `Research`, `Testing`, `Documentation`, `Meeting`, `Review`, `Blocked`, `In Progress`, `Completed`, `Backlog`, `Design`, `Frontend`, `Backend`, `DevOps`, `QA`
